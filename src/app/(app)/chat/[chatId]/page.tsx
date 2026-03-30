@@ -106,9 +106,12 @@ export default function ChatIdPage() {
                 : "4px 12px 12px 12px",
               whiteSpace: "pre-wrap",
             }}>
+              {m.content}
+            </div>
+          </div>
         ))}
 
-              {isLoading && (
+        {isLoading && (
                 <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                   <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#185FA5", fontWeight: 600, flexShrink: 0 }}>AI</div>
                   <div style={{ padding: "12px 16px", background: "white", border: "1px solid #e5e7eb", borderRadius: "4px 12px 12px 12px", display: "flex", gap: 6 }}>
