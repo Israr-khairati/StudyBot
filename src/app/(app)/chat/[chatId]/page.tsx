@@ -112,47 +112,47 @@ export default function ChatIdPage() {
         ))}
 
         {isLoading && (
-                <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#185FA5", fontWeight: 600, flexShrink: 0 }}>AI</div>
-                  <div style={{ padding: "12px 16px", background: "white", border: "1px solid #e5e7eb", borderRadius: "4px 12px 12px 12px", display: "flex", gap: 6 }}>
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} style={{
-                        width: 7, height: 7, borderRadius: "50%", background: "#d1d5db",
-                        animation: "bounce 1.2s infinite", animationDelay: `${i * 0.2}s`,
-                      }} />
-                    ))}
-                  </div>
-                </div>
-              )}
-              <div ref={bottomRef} />
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#185FA5", fontWeight: 600, flexShrink: 0 }}>AI</div>
+            <div style={{ padding: "12px 16px", background: "white", border: "1px solid #e5e7eb", borderRadius: "4px 12px 12px 12px", display: "flex", gap: 6 }}>
+              {[0, 1, 2].map((i) => (
+                <div key={i} style={{
+                  width: 7, height: 7, borderRadius: "50%", background: "#d1d5db",
+                  animation: "bounce 1.2s infinite", animationDelay: `${i * 0.2}s`,
+                }} />
+              ))}
             </div>
-
-            {/* Input */}
-            <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", background: "white", display: "flex", gap: 8 }}>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-                placeholder="Continue the conversation…"
-                rows={1}
-                style={{
-                  flex: 1, resize: "none", padding: "9px 12px", border: "1px solid #e5e7eb",
-                  borderRadius: 8, fontSize: 14, fontFamily: "inherit", outline: "none",
-                  background: "#f9fafb", minHeight: 38,
-                }}
-              />
-              <button onClick={() => send(input)} disabled={!input.trim() || isLoading} style={{
-                width: 38, height: 38, background: "#185FA5", border: "none", borderRadius: 8,
-                color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                opacity: !input.trim() || isLoading ? 0.5 : 1,
-                flexShrink: 0,
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
-                </svg>
-              </button>
-            </div>
-            <style>{`@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}`}</style>
           </div>
-        );
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", background: "white", display: "flex", gap: 8 }}>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
+          placeholder="Continue the conversation…"
+          rows={1}
+          style={{
+            flex: 1, resize: "none", padding: "9px 12px", border: "1px solid #e5e7eb",
+            borderRadius: 8, fontSize: 14, fontFamily: "inherit", outline: "none",
+            background: "#f9fafb", minHeight: 38,
+          }}
+        />
+        <button onClick={() => send(input)} disabled={!input.trim() || isLoading} style={{
+          width: 38, height: 38, background: "#185FA5", border: "none", borderRadius: 8,
+          color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          opacity: !input.trim() || isLoading ? 0.5 : 1,
+          flexShrink: 0,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        </button>
+      </div>
+      <style>{`@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}`}</style>
+    </div>
+  );
 }
