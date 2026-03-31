@@ -97,7 +97,7 @@ export default function SignInPage() {
           </div>
         </div>
 
-        <button
+        {/* <button
           onClick={() => signIn("google", { callbackUrl: "/chat" })}
           className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-slate-200 rounded-lg font-medium text-slate-700 hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
         >
@@ -120,7 +120,7 @@ export default function SignInPage() {
             />
           </svg>
           Google Account
-        </button>
+        </button> */}
 
         <p className="mt-8 text-center text-sm text-slate-500">
           Don't have an account?{" "}
