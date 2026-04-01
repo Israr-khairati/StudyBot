@@ -1,5 +1,3 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,12 +13,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -35,25 +33,20 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?         @unique
   password      String?
   emailVerified DateTime?
   image         String?
-  role          Role      @default(USER)
+  role          Role            @default(USER)
   accounts      Account[]
-  sessions      Session[]
-  notes         Note[]
   chats         Chat[]
-  timetable     TimetableSlot[]
   exams         Exam[]
+  notes         Note[]
+  sessions      Session[]
+  timetable     TimetableSlot[]
 }
 
 model VerificationToken {
@@ -67,56 +60,61 @@ model VerificationToken {
 model Note {
   id        String   @id @default(cuid())
   title     String
-  content   String   @db.Text
-  summary   String?  @db.Text
+  content   String
+  summary   String?
   subject   String
   chapter   String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Chat {
   id        String    @id @default(cuid())
   subject   String?
   userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages  Message[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
 }
 
 model Message {
   id        String   @id @default(cuid())
-  role      String   // "user" | "assistant"
-  content   String   @db.Text
+  role      String
+  content   String
   chatId    String
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 model TimetableSlot {
   id        String   @id @default(cuid())
-  day       String   // "Mon" | "Tue" | "Wed" | "Thu" | "Fri"
-  startTime String   // "08:00"
-  endTime   String   // "09:00"
+  day       String
+  startTime String
+  endTime   String
   subject   String
   room      String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Exam {
-  id          String   @id @default(cuid())
-  subject     String
-  title       String
-  date        DateTime
-  duration    Int      // minutes
-  room        String?
-  chapters    String[] // list of chapters covered
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  subject   String
+  title     String
+  date      DateTime
+  duration  Int
+  room      String?
+  chapters  String[]
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
 }

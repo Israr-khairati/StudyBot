@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
@@ -18,7 +22,7 @@
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
-    "@prisma/client": "^5.10.0",
+    "@prisma/client": "^5.22.0",
     "@tanstack/react-query": "^5.25.0",
     "@trpc/client": "^11.0.0-rc.330",
     "@trpc/next": "^11.0.0-rc.330",
@@ -40,11 +44,17 @@
     "@babel/plugin-transform-class-properties": "^7.28.6",
     "@babel/plugin-transform-private-methods": "^7.28.6",
     "@babel/plugin-transform-private-property-in-object": "^7.28.6",
+    "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.11.5",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "prisma": "^5.10.0",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.19.37",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.0.1",
+    "jsdom": "^29.0.1",
+    "prisma": "^5.22.0",
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.2"
   }
 }
