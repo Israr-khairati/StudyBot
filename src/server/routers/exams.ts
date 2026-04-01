@@ -91,7 +91,7 @@ Chapters / topics covered: ${chapters.join(", ")}
 Question types to include: ${selectedTypes}
 Difficulty: ${difficulty}
 
-Return ONLY a valid JSON array. Each question object must have:
+Return ONLY a valid JSON object with a "questions" key containing the array of question objects. Each question object must have:
 - id: number
 - type: "mcq" | "short" | "long" | "true_false"
 - question: string
@@ -101,7 +101,7 @@ Return ONLY a valid JSON array. Each question object must have:
 - difficulty: "easy" | "medium" | "hard"
 - chapter: string (which chapter/topic this covers)
 
-Return only the JSON array, no markdown fences or explanation.`;
+Return only the JSON object, no markdown fences or explanation.`;
 
       const response = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
@@ -110,12 +110,13 @@ Return only the JSON array, no markdown fences or explanation.`;
         response_format: { type: "json_object" },
       });
 
-      const raw = response.choices[0]?.message?.content ?? "[]";
+      const raw = response.choices[0]?.message?.content ?? "{}";
 
       try {
         const cleaned = raw.replace(/```json|```/g, "").trim();
-        const questions = JSON.parse(cleaned);
-        return { questions };
+        const parsed = JSON.parse(cleaned);
+        const questionsArray = Array.isArray(parsed) ? parsed : parsed.questions ?? [];
+        return { questions: questionsArray };
       } catch {
         throw new Error("Failed to parse questions from AI response");
       }

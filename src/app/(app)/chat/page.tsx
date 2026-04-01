@@ -4,7 +4,6 @@
 import { useState, useRef, useEffect } from "react";
 import { api } from "@/lib/trpc";
 
-const SUBJECTS = ["All", "Physics", "Maths", "Chemistry", "CS", "English"];
 const SUGGESTIONS = [
   "Explain Newton's second law with an example",
   "What is the quadratic formula?",
@@ -22,9 +21,35 @@ export default function ChatPage() {
   const [chatId, setChatId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const createChat = api.doubt.createChat.useMutation();
   const sendMessage = api.doubt.sendMessage.useMutation();
+
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  // Keep input focused
+  useEffect(() => {
+    const handleWindowClick = () => {
+      // Small delay to allow other clicks (like buttons) to process first
+      setTimeout(() => {
+        if (document.activeElement?.tagName !== "INPUT" && 
+            document.activeElement?.tagName !== "TEXTAREA" && 
+            document.activeElement?.tagName !== "BUTTON") {
+          inputRef.current?.focus();
+        }
+      }, 0);
+    };
+    window.addEventListener("click", handleWindowClick);
+    window.addEventListener("focus", () => inputRef.current?.focus());
+    return () => {
+      window.removeEventListener("click", handleWindowClick);
+      window.removeEventListener("focus", () => inputRef.current?.focus());
+    };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,6 +75,8 @@ export default function ChatPage() {
       setMessages((m) => [...m, { role: "assistant", content: "Sorry, something went wrong. Please try again." }]);
     } finally {
       setIsLoading(false);
+      // Re-focus after sending
+      setTimeout(() => inputRef.current?.focus(), 0);
     }
   };
 
@@ -58,17 +85,6 @@ export default function ChatPage() {
       {/* Header */}
       <div style={{ padding: "14px 20px", borderBottom: "1px solid #e5e7eb", background: "white" }}>
         <h1 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 10px", color: "#111" }}>Ask a doubt</h1>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {SUBJECTS.map((s) => (
-            <button key={s} onClick={() => setActiveSubject(s === "All" ? undefined : s)} style={{
-              fontSize: 12, padding: "4px 10px", borderRadius: 999, cursor: "pointer",
-              border: "1px solid",
-              borderColor: (activeSubject === s || (s === "All" && !activeSubject)) ? "#185FA5" : "#e5e7eb",
-              background: (activeSubject === s || (s === "All" && !activeSubject)) ? "#E6F1FB" : "transparent",
-              color: (activeSubject === s || (s === "All" && !activeSubject)) ? "#185FA5" : "#6b7280",
-            }}>{s}</button>
-          ))}
-        </div>
       </div>
 
       {/* Messages */}
@@ -129,6 +145,7 @@ export default function ChatPage() {
       {/* Input */}
       <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", background: "white", display: "flex", gap: 8 }}>
         <textarea
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}

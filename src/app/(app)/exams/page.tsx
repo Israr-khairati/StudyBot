@@ -4,13 +4,22 @@
 import { useState } from "react";
 import { api } from "@/lib/trpc";
 
-const SUBJECTS = ["Physics", "Maths", "Chemistry", "CS", "English"];
+const SUBJECTS = ["Physics", "Maths", "Chemistry", "CS", "English", "Biology", "History", "Geography", "Economics", "Psychology", "Sociology", "Physical Education", "Art", "Music"];
 const SUBJECT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  Physics:   { bg: "#E6F1FB", text: "#185FA5", border: "#B5D4F4" },
-  Maths:     { bg: "#EAF3DE", text: "#3B6D11", border: "#C0DD97" },
-  Chemistry: { bg: "#FAEEDA", text: "#854F0B", border: "#FAC775" },
-  CS:        { bg: "#EEEDFE", text: "#534AB7", border: "#CECBF6" },
-  English:   { bg: "#FAECE7", text: "#993C1D", border: "#F5C4B3" },
+  Physics:            { bg: "#E6F1FB", text: "#185FA5", border: "#B5D4F4" },
+  Maths:              { bg: "#EAF3DE", text: "#3B6D11", border: "#C0DD97" },
+  Chemistry:          { bg: "#FAEEDA", text: "#854F0B", border: "#FAC775" },
+  CS:                 { bg: "#EEEDFE", text: "#534AB7", border: "#CECBF6" },
+  English:            { bg: "#FAECE7", text: "#993C1D", border: "#F5C4B3" },
+  Biology:            { bg: "#E6F4EA", text: "#1E7E34", border: "#C3E6CB" },
+  History:            { bg: "#FEF7E0", text: "#B06000", border: "#FDE293" },
+  Geography:          { bg: "#E8F0FE", text: "#1967D2", border: "#AECBFA" },
+  Economics:          { bg: "#FCE8E6", text: "#C5221F", border: "#FAD2CF" },
+  Psychology:         { bg: "#F3E5F5", text: "#7B1FA2", border: "#E1BEE7" },
+  Sociology:          { bg: "#FFF3E0", text: "#E65100", border: "#FFE0B2" },
+  "Physical Education": { bg: "#E0F2F1", text: "#00695C", border: "#B2DFDB" },
+  Art:                { bg: "#FCE4EC", text: "#C2185B", border: "#F8BBD0" },
+  Music:              { bg: "#E1F5FE", text: "#0288D1", border: "#B3E5FC" },
 };
 
 type View = "list" | "practice" | "plan";
@@ -51,9 +60,11 @@ export default function ExamsPage() {
       <div style={{ padding: 20, flex: 1, maxWidth: 720 }}>
         <button onClick={() => setView("list")} style={{ fontSize: 13, color: "#185FA5", background: "none", border: "none", cursor: "pointer", marginBottom: 16, padding: 0 }}>← Back</button>
         <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Practice questions</h2>
-        <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 20px" }}>{questions.length} questions generated</p>
+        <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 20px" }}>
+          {Array.isArray(questions) ? `${questions.length} questions generated` : "Generating questions..."}
+        </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {questions.map((q, i) => (
+          {Array.isArray(questions) && questions.map((q, i) => (
             <div key={q.id} style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: 10, padding: 16 }}>
               <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                 <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 999, background: "#f3f4f6", color: "#6b7280" }}>{q.type.toUpperCase()}</span>

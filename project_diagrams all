@@ -1,0 +1,158 @@
+# 🗺️ StudyBot: Complete Design Diagrams
+
+This document contains a series of diagrams to help you understand every aspect of the platform's infrastructure and data flow.
+
+---
+
+## 1. 🏗️ High-Level System Architecture
+**Purpose:** Showing how the frontend, API, and services connect.
+
+```mermaid
+graph TD
+    subgraph Client ["Client (Next.js Frontend)"]
+        User(["👤 User"])
+        Sidebar["Sidebar Component"]
+        ChatPage["Chat Section (Doubt)"]
+        NotesPage["Notes Section"]
+    end
+
+    subgraph API ["API Layer (tRPC)"]
+        TRPC["tRPC Middleware / Procedures"]
+        AuthRouter["Auth Router"]
+        NoteRouter["Note Router"]
+        DoubtRouter["Doubt Router"]
+        TimetableRouter["Timetable Router"]
+    end
+
+    subgraph Services ["External Services"]
+        Prisma["Prisma ORM"]
+        DB[("PostgreSQL Database")]
+        Groq["Groq AI (Llama 3)"]
+    end
+
+    User --> Sidebar
+    User --> ChatPage
+    
+    ChatPage == "Queries/Mutations" ==> TRPC
+    TRPC --- DoubtRouter
+    
+    DoubtRouter --> Groq
+    DoubtRouter --> Prisma
+    Prisma --> DB
+```
+
+---
+
+## 2. 🗄️ Entity Relationship Diagram (ERD) - Database Schema
+**Purpose:** Visualizing the data models and their relations in the `schema.prisma`.
+
+```mermaid
+erDiagram
+    USER ||--o{ NOTE : creates
+    USER ||--o{ CHAT : starts
+    USER ||--o{ EXAM : schedules
+    USER ||--o{ TIMETABLE_SLOT : has
+
+    CHAT ||--o{ MESSAGE : contains
+
+    USER {
+        string id PK
+        string email UK
+        string password
+        string name
+        datetime createdAt
+    }
+
+    NOTE {
+        string id PK
+        string userId FK
+        string title
+        string content
+        string summary
+        datetime createdAt
+    }
+
+    CHAT {
+        string id PK
+        string userId FK
+        string subject
+        datetime createdAt
+    }
+
+    MESSAGE {
+        string id PK
+        string chatId FK
+        string content
+        string role "user | assistant"
+        datetime createdAt
+    }
+
+    EXAM {
+        string id PK
+        string userId FK
+        string title
+        datetime date
+        string chapters
+    }
+```
+
+---
+
+## 3. 💬 Sequence Diagram: Asking a Doubt
+**Purpose:** Showing the step-by-step lifecycle of an AI request.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant TRPC as tRPC Router
+    participant Groq as Groq AI API
+    participant DB as Database (Prisma)
+
+    User->>Frontend: Types doubt and clicks "Send"
+    Frontend->>DB: Saves user message in chat history
+    Frontend->>TRPC: Calls doubtRouter.sendMessage()
+    
+    TRPC->>DB: Fetches recent history for context
+    TRPC->>Groq: Sends user doubt + history context
+    Groq-->>TRPC: Returns Llama 3 AI response
+    
+    TRPC->>DB: Saves AI message in chat history
+    TRPC-->>Frontend: Sends back the AI response
+    Frontend-->>User: Renders the AI response bubble
+```
+
+---
+
+## 4. 📝 State Diagram: Study Session Lifecycle
+**Purpose:** Visualizing the user journey from login to studying.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Unauthenticated
+    Unauthenticated --> Authenticated : Sign In / Sign Up
+    
+    state Authenticated {
+        [*] --> Dashboard
+        Dashboard --> Chatting : "Ask a Doubt"
+        Chatting --> Dashboard : Close Chat
+        
+        Dashboard --> TakingNotes : "Create / Edit Note"
+        TakingNotes --> AIReview : "Summarize with AI"
+        AIReview --> TakingNotes
+        
+        Dashboard --> ExamPrep : "Set Exam Date"
+        ExamPrep --> Practice : "Generate AI Questions"
+    }
+    
+    Authenticated --> Unauthenticated : Sign Out
+    Unauthenticated --> [*]
+```
+
+---
+
+## 💡 How to use these:
+*   **Architecture**: Use for explaining the "Big Picture" to other developers.
+*   **ERD**: Essential when changing database logic or adding new features.
+*   **Sequence**: Use for debugging API performance and bottleneck analysis.
+*   **State**: Great for planning the User Experience (UX) and navigation flows.

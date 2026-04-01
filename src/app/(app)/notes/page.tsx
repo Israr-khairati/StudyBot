@@ -4,13 +4,22 @@
 import { useState } from "react";
 import { api } from "@/lib/trpc";
 
-const SUBJECTS = ["Physics", "Maths", "Chemistry", "CS", "English"];
+const SUBJECTS = ["Physics", "Maths", "Chemistry", "CS", "English", "Biology", "History", "Geography", "Economics", "Psychology", "Sociology", "Physical Education", "Art", "Music"];
 const SUBJECT_COLORS: Record<string, { bg: string; text: string }> = {
-  Physics:   { bg: "#E6F1FB", text: "#185FA5" },
-  Maths:     { bg: "#EAF3DE", text: "#3B6D11" },
-  Chemistry: { bg: "#FAEEDA", text: "#854F0B" },
-  CS:        { bg: "#EEEDFE", text: "#534AB7" },
-  English:   { bg: "#FAECE7", text: "#993C1D" },
+  Physics:            { bg: "#E6F1FB", text: "#185FA5" },
+  Maths:              { bg: "#EAF3DE", text: "#3B6D11" },
+  Chemistry:          { bg: "#FAEEDA", text: "#854F0B" },
+  CS:                 { bg: "#EEEDFE", text: "#534AB7" },
+  English:            { bg: "#FAECE7", text: "#993C1D" },
+  Biology:            { bg: "#E6F4EA", text: "#1E7E34" },
+  History:            { bg: "#FEF7E0", text: "#B06000" },
+  Geography:          { bg: "#E8F0FE", text: "#1967D2" },
+  Economics:          { bg: "#FCE8E6", text: "#C5221F" },
+  Psychology:         { bg: "#F3E5F5", text: "#7B1FA2" },
+  Sociology:          { bg: "#FFF3E0", text: "#E65100" },
+  "Physical Education": { bg: "#E0F2F1", text: "#00695C" },
+  Art:                { bg: "#FCE4EC", text: "#C2185B" },
+  Music:              { bg: "#E1F5FE", text: "#0288D1" },
 };
 
 type View = "list" | "create" | "generate" | "view";

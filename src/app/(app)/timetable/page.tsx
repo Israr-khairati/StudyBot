@@ -6,13 +6,22 @@ import { api } from "@/lib/trpc";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
 const TIME_SLOTS = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-const SUBJECTS = ["Physics", "Maths", "Chemistry", "CS", "English"];
+const SUBJECTS = ["Physics", "Maths", "Chemistry", "CS", "English", "Biology", "History", "Geography", "Economics", "Psychology", "Sociology", "Physical Education", "Art", "Music"];
 const SUBJECT_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  Physics:   { bg: "#E6F1FB", border: "#B5D4F4", text: "#185FA5" },
-  Maths:     { bg: "#EAF3DE", border: "#C0DD97", text: "#3B6D11" },
-  Chemistry: { bg: "#FAEEDA", border: "#FAC775", text: "#854F0B" },
-  CS:        { bg: "#EEEDFE", border: "#CECBF6", text: "#534AB7" },
-  English:   { bg: "#FAECE7", border: "#F5C4B3", text: "#993C1D" },
+  Physics:            { bg: "#E6F1FB", border: "#B5D4F4", text: "#185FA5" },
+  Maths:              { bg: "#EAF3DE", border: "#C0DD97", text: "#3B6D11" },
+  Chemistry:          { bg: "#FAEEDA", border: "#FAC775", text: "#854F0B" },
+  CS:                 { bg: "#EEEDFE", border: "#CECBF6", text: "#534AB7" },
+  English:            { bg: "#FAECE7", border: "#F5C4B3", text: "#993C1D" },
+  Biology:            { bg: "#E6F4EA", border: "#C3E6CB", text: "#1E7E34" },
+  History:            { bg: "#FEF7E0", border: "#FDE293", text: "#B06000" },
+  Geography:          { bg: "#E8F0FE", border: "#AECBFA", text: "#1967D2" },
+  Economics:          { bg: "#FCE8E6", border: "#FAD2CF", text: "#C5221F" },
+  Psychology:         { bg: "#F3E5F5", border: "#E1BEE7", text: "#7B1FA2" },
+  Sociology:          { bg: "#FFF3E0", border: "#FFE0B2", text: "#E65100" },
+  "Physical Education": { bg: "#E0F2F1", border: "#B2DFDB", text: "#00695C" },
+  Art:                { bg: "#FCE4EC", border: "#F8BBD0", text: "#C2185B" },
+  Music:              { bg: "#E1F5FE", border: "#B3E5FC", text: "#0288D1" },
 };
 
 export default function TimetablePage() {
