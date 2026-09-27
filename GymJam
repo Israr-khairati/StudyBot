@@ -1,74 +1,96 @@
-<ArtifactMetadata>
-{"Summary": "An architectural flowchart diagram of the GymOS monorepo, showing relationships between the frontend apps, Node.js API, database, and external integrations.", "UserFacing": true, "RequestFeedback": false}
-</ArtifactMetadata>
-# GymOS Architecture Diagram
+# GymOS Screen Flow & Navigation Architecture
 
-This flowchart visualizes the complete structure of the GymOS platform based on your repository. 
+This document maps out the user journey and screen connections for both the **Web Admin Panel** and the **Member Mobile App**. 
 
-### Key Takeaways:
-1. **Shared Types (`packages/shared`)**: Notice how both the Next.js Web App and the Express API consume the shared package. This guarantees that your frontend and backend always agree on data structures.
-2. **Cron Jobs**: The backend has a dedicated internal cron system that automatically triggers third-party communication APIs without manual intervention.
-3. **Multi-Platform Access**: The Express API acts as the central hub, serving the Kiosk, the Admin web dashboard, and the Flutter mobile app uniformly.
+*(GitHub natively renders these Mermaid diagrams. Just view this file on GitHub to see the visual flowcharts!)*
+
+## 1. Web App (Admin Panel & Kiosk)
+**Audience:** Gym Owners, Receptionists, Coaches
 
 ```mermaid
 flowchart TD
-    subgraph Users [👤 End Users]
-        O[Gym Owner / Staff]
-        K[Front Desk Tablet]
-        M[Gym Member]
-    end
+    %% Define Styles
+    classDef auth fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,color:#1f2937
+    classDef dashboard fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+    classDef feature fill:#e0e7ff,stroke:#6366f1,stroke-width:2px,color:#3730a3
+    classDef modal fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e
+    classDef kiosk fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#14532d
 
-    subgraph Frontends [💻 Frontend Apps]
-        W[Next.js Web App\napps/web]
-        MA[Flutter Mobile App\napps/mobile]
-    end
-
-    subgraph Backend [⚙️ Backend System]
-        API[Express API\napps/api]
-        CRON[[Node Cron Jobs\nAutomated Tasks]]
-    end
-
-    subgraph Packages [📦 Monorepo Packages]
-        SH>Shared Types & Logic\npackages/shared]
-        DB[(Prisma Client\npackages/db)]
-    end
+    %% Auth Flow
+    Start([User Visits Website]) --> Login[Login Page\n/login]:::auth
+    Login -->|JWT Authenticated| AuthCheck{Role?}
     
-    subgraph Storage [🗄️ Database Layer]
-        PG[(PostgreSQL\nSupabase / Local)]
-    end
+    %% Role Fork
+    AuthCheck -->|Receptionist| Kiosk[Kiosk Check-in Mode\n/kiosk]:::kiosk
+    AuthCheck -->|Owner / Coach| Dashboard[Main Dashboard\n/dashboard]:::dashboard
 
-    subgraph ThirdParty [🌐 External Integrations]
-        WATI[WATI\nWhatsApp API]
-        MSG91[MSG91\nSMS & OTP]
-        FCM[Firebase\nPush Notifications]
-        RP[Razorpay\nPayment Gateway]
-        R2[Cloudflare R2\nS3 File Storage]
-    end
+    %% Kiosk
+    Kiosk -->|Scans Member QR| SuccessModal[Check-in Success Alert]:::modal
+    SuccessModal -.-> Kiosk
 
-    %% User Interactions
-    O -->|Manages Gym| W
-    K -->|Scans Check-in QR| W
-    M -->|Tracks Progress| MA
-    M -->|Downloads APK from| W
+    %% Main Navigation
+    Dashboard --> Members[Members Management\n/members]:::feature
+    Dashboard --> Fees[Fee Management\n/fees]:::feature
+    Dashboard --> Workouts[Workout Planner\n/workouts/planner]:::feature
+    Dashboard --> Diets[Diet Charts\n/diets]:::feature
+    Dashboard --> Notifications[Send Broadcasts\n/notifications]:::feature
+    Dashboard --> Settings[Gym Settings\n/settings]:::feature
 
-    %% Frontend to Backend
-    W <==>|REST over HTTP| API
-    MA <==>|REST over HTTP| API
-
-    %% Shared Packages
-    W -.->|Imports| SH
-    API -.->|Imports| SH
-    API -->|Queries via| DB
+    %% Deep Links (Members)
+    Members --> AddMember[Add New Member\n/members/new]:::modal
+    Members --> MemberProfile[Member Details\n/members/:id]:::feature
     
-    %% Database Connection
-    DB ==>|Read / Write| PG
+    %% Member Profile Tabs
+    MemberProfile --> ProfileOverview(Overview Tab)
+    MemberProfile --> ProfileAttendance(Attendance Heatmap)
+    MemberProfile --> ProfileProgress(Body Stats Charts)
+    MemberProfile --> ProfileFees(Payment History)
 
-    %% Backend Internals
-    API --- CRON
+    %% Deep Links (Fees)
+    Fees --> CollectFee[Collect Payment\n/payments/collect]:::modal
+    CollectFee -->|Generates| Invoice[PDF Invoice]
+```
 
-    %% External APIs
-    CRON -.->|Sends Reminders| WATI
-    CRON -.->|Sends Alerts| MSG91
-    CRON -.->|Inactivity Nudges| FCM
-    API -.->|Verifies Subscriptions| RP
-    API -.->|Hosts Logos / Avatars| R2
+---
+
+## 2. Flutter Mobile App
+**Audience:** Gym Members
+
+```mermaid
+flowchart TD
+    %% Define Styles
+    classDef init fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,color:#1f2937
+    classDef nav fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#831843
+    classDef screen fill:#fdf2f8,stroke:#f472b6,stroke-width:2px,color:#9d174d
+    classDef action fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e
+
+    %% Startup Flow
+    Splash[Splash Screen]:::init --> AuthCheck{Logged In?}
+    AuthCheck -->|No| Login[Login Screen\nPhone OTP]:::init
+    Login -->|MSG91 OTP Success| Home
+
+    AuthCheck -->|Yes| Home[Home Dashboard\nBottom Nav Bar]:::nav
+
+    %% Bottom Navigation
+    Home --> TabHome[🏠 Home Tab]:::screen
+    Home --> TabProgress[📈 Progress Tab]:::screen
+    Home --> TabNotifications[🔔 Notifications Tab]:::screen
+    Home --> TabProfile[👤 Profile Tab]:::screen
+
+    %% Home Screen Actions
+    TabHome --> DailyWorkout[View Today's Workout]:::action
+    TabHome --> DailyDiet[View Today's Diet]:::action
+    TabHome --> Attendance[View Attendance Streak]:::action
+
+    %% Progress Actions
+    TabProgress --> LogStats[Log New Body Stats\nWeight, Biceps, etc.]:::action
+    TabProgress --> ViewCharts[View FlChart Trends]:::action
+
+    %% Profile Actions
+    TabProfile --> ShowQR[Display Dynamic Check-in QR]:::action
+    TabProfile --> Subscription[View Plan Expiry & Fees]:::action
+    TabProfile --> Logout[Logout]:::init
+    
+    %% Kiosk Connection
+    ShowQR -.->|Scanned by Reception Tablet| KioskCheckIn[(GymOS API Check-in)]
+```
