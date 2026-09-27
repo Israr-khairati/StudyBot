@@ -1,0 +1,74 @@
+<ArtifactMetadata>
+{"Summary": "An architectural flowchart diagram of the GymOS monorepo, showing relationships between the frontend apps, Node.js API, database, and external integrations.", "UserFacing": true, "RequestFeedback": false}
+</ArtifactMetadata>
+# GymOS Architecture Diagram
+
+This flowchart visualizes the complete structure of the GymOS platform based on your repository. 
+
+### Key Takeaways:
+1. **Shared Types (`packages/shared`)**: Notice how both the Next.js Web App and the Express API consume the shared package. This guarantees that your frontend and backend always agree on data structures.
+2. **Cron Jobs**: The backend has a dedicated internal cron system that automatically triggers third-party communication APIs without manual intervention.
+3. **Multi-Platform Access**: The Express API acts as the central hub, serving the Kiosk, the Admin web dashboard, and the Flutter mobile app uniformly.
+
+```mermaid
+flowchart TD
+    subgraph Users [👤 End Users]
+        O[Gym Owner / Staff]
+        K[Front Desk Tablet]
+        M[Gym Member]
+    end
+
+    subgraph Frontends [💻 Frontend Apps]
+        W[Next.js Web App\napps/web]
+        MA[Flutter Mobile App\napps/mobile]
+    end
+
+    subgraph Backend [⚙️ Backend System]
+        API[Express API\napps/api]
+        CRON[[Node Cron Jobs\nAutomated Tasks]]
+    end
+
+    subgraph Packages [📦 Monorepo Packages]
+        SH>Shared Types & Logic\npackages/shared]
+        DB[(Prisma Client\npackages/db)]
+    end
+    
+    subgraph Storage [🗄️ Database Layer]
+        PG[(PostgreSQL\nSupabase / Local)]
+    end
+
+    subgraph ThirdParty [🌐 External Integrations]
+        WATI[WATI\nWhatsApp API]
+        MSG91[MSG91\nSMS & OTP]
+        FCM[Firebase\nPush Notifications]
+        RP[Razorpay\nPayment Gateway]
+        R2[Cloudflare R2\nS3 File Storage]
+    end
+
+    %% User Interactions
+    O -->|Manages Gym| W
+    K -->|Scans Check-in QR| W
+    M -->|Tracks Progress| MA
+    M -->|Downloads APK from| W
+
+    %% Frontend to Backend
+    W <==>|REST over HTTP| API
+    MA <==>|REST over HTTP| API
+
+    %% Shared Packages
+    W -.->|Imports| SH
+    API -.->|Imports| SH
+    API -->|Queries via| DB
+    
+    %% Database Connection
+    DB ==>|Read / Write| PG
+
+    %% Backend Internals
+    API --- CRON
+
+    %% External APIs
+    CRON -.->|Sends Reminders| WATI
+    CRON -.->|Sends Alerts| MSG91
+    CRON -.->|Inactivity Nudges| FCM
+    API -.->|Verifies Subscriptions| RP
+    API -.->|Hosts Logos / Avatars| R2
